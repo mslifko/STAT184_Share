@@ -1,0 +1,145 @@
+---
+title: "STAT 184 Activity 7"
+author: Solutions
+date: Thursday, October 20
+output: html_notebook
+---
+
+## Front Matter
+```{r}
+remove(list = ls())
+library(tidyverse)
+```
+
+## Preliminaries
+```{r}
+#Read in Data
+data("iris")
+head(iris)
+
+#Basic Plot 1
+ggplot(data = iris, mapping = aes(x = Sepal.Length,
+                                  y = Sepal.Width)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)")
+
+#Basic Plot 2
+ggplot(data = iris, mapping = aes(x = Sepal.Length,
+                                  y = Sepal.Width,
+                                  color = Species)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)")
+```
+
+## Problem 1
+In this problem, we are controlling the color by choosing a specific color. Since we are not mapping the color to a variable, you will do this outside of aes function. Specifically, add `color = "orange"` within the `geom_point()` function.
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point(color = "orange") +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)")
+```
+
+
+## Problem 2
+The key to this is to use the `scale_color_manual()` function.
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length, 
+                                  y = Sepal.Width,
+                                  color = Species)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)") +
+  scale_color_manual(values = c("orange", "green", "navy"))
+```
+
+## Problem 3
+The key to this is to use `legend.position = "bottom"` in the `theme` function. The `theme` function provides a lot of customization options for various aspects of ggplot. Here, we are only modifying the legend position.
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length, 
+                                  y = Sepal.Width,
+                                  color = Species)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)") +
+  scale_color_manual(values=c("orange", "green", "navy")) +
+  theme(legend.position="bottom")
+```
+
+## Problem 4
+The tutorial in Lecture 5 showed us how to add titles and substitles. In the `labs` function, we can specify `title = "Text"` and `subtitle = "Text"`.
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length, 
+                                  y = Sepal.Width,
+                                  color = Species)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)",
+       title = "Iris Flower Measurements",
+       subtitle = "Sepal Length vs. Sepal Width by Species") +
+  scale_color_manual(values=c("orange", "green", "navy")) +
+  theme(legend.position="bottom")
+```
+
+## Problem 5
+The language "sepal width as a function of sepal length" means that sepal width should go on the y-axis and sepal length goes on the x axis. There are many ways to do the faceting. My technique uses `facet_grid( . ~ species)`. We can add the line of best fit by using `geom_smooth(method = lm, se = FALSE)`. The `method = lm` specifies that we use a linear model (lm) to perform the smoothing. The `se = FALSE` removes the gray standard error boundaries. The `theme_bw()` removes the gray background.
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length,
+                                  y = Sepal.Width)) +
+  geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  facet_grid( . ~ Species) +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)") +
+  theme_bw()
+```
+
+## Problem 6
+```{r}
+ggplot(data = iris, mapping = aes(x = Species, 
+                                  y = Sepal.Width)) +
+  geom_boxplot() +
+  labs(x = "Species",
+       y = "Sepal Width (in cm)") +
+  theme_bw()
+```
+
+## Problem 7
+My technique for this is to use the `factor` function and within `factor`, I used the `levels` argument to change the order of the levels. Instead of R determining the order of the factor levels, this allows me to specify the order as I want it to be.
+
+```{r}
+iris2 <- 
+  iris %>%
+  mutate(Species = factor(Species, 
+                          levels = c("setosa", "virginica", "versicolor")))
+
+ggplot(data = iris2, mapping = aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot() +
+  labs(x = "Species",
+       y = "Sepal Width (in cm)") +
+  theme_bw()
+
+```
+
+## Problem 8
+This problem is a little tricky. In order to do this, we will use the `scale_x_continuous()` function. Within it we need to specify TWO arguments. Use `breaks = seq(4, 8, 0.5)`. This adds extra tick marks; however, the x axis is only going to 4.5 instead of 4. To modify this, you should also specify `limits = c(4, 8)` insdie the `scale_x_continuous()` function. 
+
+```{r}
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Sepal.Width,
+                                  color = Species)) +
+  geom_point() +
+  labs(x = "Sepal Length (in cm)",
+       y = "Sepal Width (in cm)") +
+  scale_color_manual(values=c("orange", "green", "navy")) +
+  theme(legend.position="bottom") +
+  scale_x_continuous(breaks = seq(4,8,0.5), limits = c(4,8
+                                                       ))
+```
+
